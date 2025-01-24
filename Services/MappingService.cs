@@ -1,5 +1,6 @@
 using System;
 using System.Reflection.Emit;
+using Microsoft.EntityFrameworkCore;
 using PaymentProject.Models;
 using PaymentProject.Models.DTOs;
 
@@ -12,7 +13,6 @@ public static class MappingService
         try{
             phoneOperator = IdRetrivingService.OperatorRetriving(dataContext, paymentRequestDto);
             if(phoneOperator is null){
-                Console.WriteLine("Phone opertor NULL *****************************************************************************************************************************************************************8");
             }
         }
         catch(KeyNotFoundException ex){
@@ -35,5 +35,20 @@ public static class MappingService
             OperatorId = phoneOperator.OperatorId,
             CardInfoId = cardInfo.CardId
         };
+    }
+
+    public static IEnumerable<UserOperationsDto> OperationsToDto(this IQueryable<Payment> paymentQuery){
+        var payment = paymentQuery.Include(x=>x.Card).Include(x=>x.Operator).ToList();
+
+        return payment.Select(p=>{
+            return new UserOperationsDto(){
+            PaymentId = p.PaymentId,
+            CardOwner =p.Card.Owner,
+            CardNumberLast8 = p.Card.CardNumber.Substring(p.Card.CardNumber.Length - 8, 8),
+            PhoneNumber = p.PhoneNumber,
+            OperatorName = p.Operator.OperatorName,
+            TimeSpan = p.TimeStamp
+        };
+        });
     }
 }

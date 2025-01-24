@@ -23,7 +23,7 @@ public static class IdRetrivingService
         
         CardInfo? cardInfo = context.CardInfos.FirstOrDefault(x=>x.CardNumber.EndsWith($"{last8}").Equals(last8) 
             && x.Owner.Equals(paymentRequestDto.CardHolder) );
-            
+
         if(cardInfo is null){
                 // Encrypt the first 8 digits of the card number
             var first8Encrypted = dataProtector.Encrypt(paymentRequestDto.CardNumber.Substring(0, 8));
@@ -36,7 +36,7 @@ public static class IdRetrivingService
             {
                 CardNumber = encryptedCardNumber, // Store encrypted + unencrypted card number
                 CVCNumber = dataProtector.Encrypt(paymentRequestDto.CVC),
-                Owner = paymentRequestDto.CardHolder,
+                Owner = paymentRequestDto.CardHolder.ToUpper(),
                 ExpirationDate = paymentRequestDto.ExpirationDate
             };
 
