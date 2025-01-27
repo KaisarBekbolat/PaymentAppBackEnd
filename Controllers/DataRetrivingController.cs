@@ -27,7 +27,7 @@ namespace PaymentProject.Controllers
             return Ok(result);
         }
 
-        [HttpPost("name/")]
+        [HttpGet("name/")]
         public IActionResult GetByName([FromBody] DataBasedOnNameOrPhone nameBased){   // DataBasedOnNameOrPhone class was used because i need class for Binding [FromBody] from JSON
             CardInfo? cardInfoName = dataContext.CardInfos.FirstOrDefault(x=>x.Owner==nameBased.Name.ToUpper()); // Using FirstOrDefault - because there UNIQUE owners of card
             var redisResult = redisCacheService.GetData<IEnumerable<UserOperationsDto>>(nameBased.Name.ToUpper());
@@ -42,7 +42,7 @@ namespace PaymentProject.Controllers
             return NotFound($"No record with given name: {nameBased.Name}");
         }
 
-        [HttpPost("number/")]
+        [HttpGet("number/")]
         public IActionResult GetByPhone([FromBody] DataBasedOnNameOrPhone nameBased){  
             DataBasedOnNameOrPhone numberBased = new DataBasedOnNameOrPhone(); 
             numberBased.PhoneNumber = nameBased.PhoneNumber.Trim();  
